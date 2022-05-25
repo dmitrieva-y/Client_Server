@@ -1,11 +1,11 @@
-import javax.xml.crypto.Data;
+import java.util.Date;
 
 public class Person {
     private String name;
     private String surname;
-    private Data berthday;
+    private Date berthday;
 
-    public Person(String name, String surname, Data berthday) {
+    public Person(String name, String surname, Date berthday) {
         this.name = name;
         this.surname = surname;
         this.berthday = berthday;
@@ -27,11 +27,11 @@ public class Person {
         this.surname = surname;
     }
 
-    public Data getBerthday() {
+    public Date getBerthday() {
         return berthday;
     }
 
-    public void setBerthday(Data berthday) {
+    public void setBerthday(Date berthday) {
         this.berthday = berthday;
     }
 
@@ -40,4 +40,11 @@ public class Person {
         return  "name='" + name + '\'' +
                 ", berthday=" + berthday;
     }
+
+    //    public static void init() throws ParseException {
+//        persons = new ArrayList<>();
+//        Date date =  new SimpleDateFormat( "dd.MM.yyyy" ).parse( "28.12.1982");
+//
+//        persons.add(new Person("Bob", "Smitt", date ));
+//    }
 }
