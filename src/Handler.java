@@ -7,8 +7,10 @@ public class Handler {
 
     public Handler() {
         this.personList = new ArrayList<>();
+        init();
+    }
+    private void init(){
         personList.add(new Person("Bob", "Smitt",  LocalDate.of(1914, 7, 28)));
-
     }
 
     public String getAllPerson(){
@@ -20,8 +22,10 @@ public class Handler {
     }
 
     public void update() {
+        //
     }
 
     public void insert() {
+        //
     }
 }

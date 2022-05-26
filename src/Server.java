@@ -4,6 +4,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_OK;
 
 public class Server {
     private final static int PORT = 8180;
@@ -14,17 +19,13 @@ public class Server {
     }
 
 
-    public static void main(String[] args) {
-        Server server = new Server();
-        server.start();
-    }
-
     private void start() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {
                 Socket client = serverSocket.accept();
                 System.out.println("Client connected");
-                new Thread(() -> readHeader(client)).start();
+                readHeader(client);
+                // new Thread(() -> readHeader(client)).start();
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -35,10 +36,19 @@ public class Server {
     public static void readHeader(Socket client) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
              PrintWriter out = new PrintWriter(client.getOutputStream())) {
-            String line = br.readLine();
-            System.out.println(line);
+            List<String> arr = new ArrayList<>();
+//            String line;
+//            while (br.ready()) {
+//                arr.add(br.readLine());
+//            }
+
+
+
+//            String line = arr.get(0);
+           String line = br.readLine();
             String method = line.split(" ")[0];
             String URI = line.split(" ")[1];
+
 
             int statusCode = 200;
             String statusText = "OK";
@@ -46,6 +56,7 @@ public class Server {
             if (method.trim().equals("GET")) {
                 if (URI.trim().equals("/persons")) {
                     text = handler.getAllPerson();
+       //             return Result.ok(HTTP_OK, text);
                 } else {
                     statusCode = 404;
                     statusText = "NOT FOUND";
@@ -65,7 +76,6 @@ public class Server {
                 statusCode = 400;
                 statusText = "BAD REQUEST";
             }
-
             out.write(getResponse(statusCode, statusText, text));
             out.flush();
         } catch (IOException e) {
@@ -80,6 +90,12 @@ public class Server {
         builder.append(text);
         return builder.toString();
     }
+
+    public static void main(String[] args) {
+        Server server = new Server();
+        server.start();
+    }
+
 }
 
 
