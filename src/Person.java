@@ -2,6 +2,8 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Person {
+    private static int count = 0;
+    private int id;
     private String name;
     private String surname;
     private LocalDate birthday;
@@ -10,6 +12,7 @@ public class Person {
         this.name = name;
         this.surname = surname;
         this.birthday = birthday;
+        this.id = count++;
     }
 
     public String getName() {
@@ -34,6 +37,10 @@ public class Person {
 
     public void setBerthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override

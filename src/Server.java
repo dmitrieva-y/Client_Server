@@ -3,92 +3,76 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_OK;
+import java.util.Objects;
 
 public class Server {
     private final static int PORT = 8180;
-    private static Handler handler;
 
-    public Server() {
-        handler = new Handler();
-    }
 
 
     private void start() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            System.out.println("Server started");
             while (true) {
-                Socket client = serverSocket.accept();
+                //Socket client = serverSocket.accept();
                 System.out.println("Client connected");
-                readHeader(client);
-                // new Thread(() -> readHeader(client)).start();
+                readHeader();
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-
-    public static void readHeader(Socket client) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
-             PrintWriter out = new PrintWriter(client.getOutputStream())) {
-            List<String> arr = new ArrayList<>();
-//            String line;
-//            while (br.ready()) {
-//                arr.add(br.readLine());
-//            }
-
-
-
-//            String line = arr.get(0);
-           String line = br.readLine();
-            String method = line.split(" ")[0];
-            String URI = line.split(" ")[1];
-
-
-            int statusCode = 200;
-            String statusText = "OK";
-            String text = "";
-            if (method.trim().equals("GET")) {
-                if (URI.trim().equals("/persons")) {
-                    text = handler.getAllPerson();
-       //             return Result.ok(HTTP_OK, text);
-                } else {
-                    statusCode = 404;
-                    statusText = "NOT FOUND";
-                }
-            } else if (method.trim().equals("POST")) {
-                if (URI.trim().startsWith("/delete")) {
-                    handler.delete();
-                } else if (URI.trim().startsWith("/update")) {
-                    handler.update();
-                } else if (URI.trim().startsWith("/insert")) {
-                    handler.insert();
-                } else {
-                    statusCode = 404;
-                    statusText = "NOT FOUND";
-                }
+    public static void readHeader() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        PrintWriter out = new PrintWriter(System.out);
+        String line;
+        while (!(line = br.readLine()).equals("ex")) {
+            String response;
+            if (line.isEmpty()) {
+                response = Result.error(StatusCod.BAD_REQUEST);
             } else {
-                statusCode = 400;
-                statusText = "BAD REQUEST";
+                response = getResponse(line);
             }
-            out.write(getResponse(statusCode, statusText, text));
+            out.write(response);
+            out.write("\r\n");
             out.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private static String getResponse(int statusCode, String statusText, String text) {
-        StringBuilder builder = new StringBuilder("HTTP/1.1 ");
-        builder.append(statusCode).append(" ").append(statusText).append("\r\n");
-        builder.append("Content-Type: text/html; charset=utf-8 \r\n\n");
-        builder.append(text);
-        return builder.toString();
+    private static String getResponse(String line) {
+        String[] param = line.split("\\s+");
+        Handler handler = new Handler(param);
+        Command command;
+        try {
+            command = Command.fromString(param[0].trim());
+        } catch (IllegalArgumentException e) {
+            return Result.error(StatusCod.BAD_REQUEST);
+        }
+        String response;
+        switch (command) {
+            case GET_ALL_PERSON:
+                response = handler.getAllPerson();
+                break;
+            case GET_PERSON:
+                response = handler.getPerson();
+                break;
+            case CREATE_PERSON:
+                response = handler.createPerson();
+                break;
+            case UPDATE_PERSON:
+                response = handler.update();
+                break;
+            case DELETE_PERSON:
+                response = handler.deletePerson();
+                break;
+            case DELETE_ALL:
+                response = handler.delete();
+                break;
+            default:
+                response = Result.error(StatusCod.BAD_REQUEST);
+        }
+        return response;
     }
 
     public static void main(String[] args) {
