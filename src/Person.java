@@ -1,14 +1,15 @@
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Person {
     private String name;
     private String surname;
-    private Date berthday;
+    private LocalDate birthday;
 
-    public Person(String name, String surname, Date berthday) {
+    public Person(String name, String surname, LocalDate birthday) {
         this.name = name;
         this.surname = surname;
-        this.berthday = berthday;
+        this.birthday = birthday;
     }
 
     public String getName() {
@@ -27,24 +28,19 @@ public class Person {
         this.surname = surname;
     }
 
-    public Date getBerthday() {
-        return berthday;
+    public LocalDate getBerthday() {
+        return birthday;
     }
 
-    public void setBerthday(Date berthday) {
-        this.berthday = berthday;
+    public void setBerthday(LocalDate birthday) {
+        this.birthday = birthday;
     }
 
     @Override
     public String toString() {
         return  "name='" + name + '\'' +
-                ", berthday=" + berthday;
+                ", birthday=" + birthday;
     }
 
-    //    public static void init() throws ParseException {
-//        persons = new ArrayList<>();
-//        Date date =  new SimpleDateFormat( "dd.MM.yyyy" ).parse( "28.12.1982");
-//
-//        persons.add(new Person("Bob", "Smitt", date ));
-//    }
+
 }

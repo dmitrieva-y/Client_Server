@@ -4,74 +4,82 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 
 public class Server {
     private final static int PORT = 8180;
-    private static BufferedReader is;
-    private static PrintWriter out;
-    private static List<Person> persons;
+    private static Handler handler;
+
+    public Server() {
+        handler = new Handler();
+    }
+
 
     public static void main(String[] args) {
+        Server server = new Server();
+        server.start();
+    }
 
+    private void start() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {
-                Socket socket = serverSocket.accept();
+                Socket client = serverSocket.accept();
                 System.out.println("Client connected");
-
-                is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                out = new PrintWriter(socket.getOutputStream());
-                while (!is.ready()) ;
-                // while (is.ready()) {
-                String request = is.readLine();
-                System.out.println(request);
-                String metod = request.split(" ")[0];
-                System.out.println(metod);
-                //  }
-                writeText("<html><body><h1>Hello</h1></body></html>");
-//                new Thread(() -> {
-//                    while (true) {
-//                        readHeader();
-//                        writeText("<html><body><h1>Hello</h1></body></html>");
-//
-//
-//                    }
-//                }).start();
-
+                new Thread(() -> readHeader(client)).start();
             }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+
+    public static void readHeader(Socket client) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+             PrintWriter out = new PrintWriter(client.getOutputStream())) {
+            String line = br.readLine();
+            System.out.println(line);
+            String method = line.split(" ")[0];
+            String URI = line.split(" ")[1];
+
+            int statusCode = 200;
+            String statusText = "OK";
+            String text = "";
+            if (method.trim().equals("GET")) {
+                if (URI.trim().equals("/persons")) {
+                    text = handler.getAllPerson();
+                } else {
+                    statusCode = 404;
+                    statusText = "NOT FOUND";
+                }
+            } else if (method.trim().equals("POST")) {
+                if (URI.trim().startsWith("/delete")) {
+                    handler.delete();
+                } else if (URI.trim().startsWith("/update")) {
+                    handler.update();
+                } else if (URI.trim().startsWith("/insert")) {
+                    handler.insert();
+                } else {
+                    statusCode = 404;
+                    statusText = "NOT FOUND";
+                }
+            } else {
+                statusCode = 400;
+                statusText = "BAD REQUEST";
+            }
+
+            out.write(getResponse(statusCode, statusText, text));
+            out.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
-    private static void writeText(String s) {
-        String response = "HTTP/1.1 200 OK\r\n" +
-                "Server: YarServer/2009-09-09\r\n" +
-                "Content-Type: text/html\r\n" +
-                "Content-Length: " + s.length() + "\r\n" +
-                "Connection: close\r\n\r\n";
-        String result = response + s;
-
-        out.println(result);
-        out.flush();
-
-
+    private static String getResponse(int statusCode, String statusText, String text) {
+        StringBuilder builder = new StringBuilder("HTTP/1.1 ");
+        builder.append(statusCode).append(" ").append(statusText).append("\r\n");
+        builder.append("Content-Type: text/html; charset=utf-8 \r\n\n");
+        builder.append(text);
+        return builder.toString();
     }
-
-    public static String readHeader() {
-        String request;
-        try {
-            request = is.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        String metod = request.split(" ")[0];
-        System.out.println(request);
-        return metod;
-    }
-
-
 }
 
 
