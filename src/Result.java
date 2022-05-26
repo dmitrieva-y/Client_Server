@@ -1,17 +1,20 @@
-import static java.net.HttpURLConnection.HTTP_OK;
-
 public class Result {
-//    public static String ok(int status, String msg) {
-//        return msg;
-//    }
-//
-//    public static String error(int status, String errorMsg, String invalidParam) {
-//
-//    }
-//
-//    public static String error(int status, String errorMsg) {
-//    }
-//
-//    public static String error(int status) {
-//    }
+    public static String  ok(StatusCod statusCod, String message) {
+        return statusCod.toString() + " " + message;
+    }
+    public static String  ok(StatusCod statusCod) {
+        return statusCod.toString()  ;
+    }
+
+    public static String error(int status, String errorMsg, String invalidParam) {
+        return null;
+    }
+
+    public static String error(StatusCod statusCod, String text) {
+        return statusCod.toString() + " " + text;
+    }
+
+    public static String error(StatusCod statusCod) {
+        return statusCod.toString();
+    }
 }
