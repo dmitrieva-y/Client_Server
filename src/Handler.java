@@ -1,11 +1,9 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Handler {
-    private Map<Integer, Person> personList;
+    private final Map<Integer, Person> personList;
     private String[] param;
 
     public Handler(String[] param) {
@@ -26,13 +24,14 @@ public class Handler {
     }
 
     public String getPerson() {
+        if (param.length < 2) return Result.error(StatusCod.BAD_REQUEST);
         int id;
         try {
             id = Integer.parseInt(param[1]);
         } catch (NumberFormatException e) {
             return Result.error(StatusCod.BAD_REQUEST);
         }
-        if(personList.containsKey(id)) return personList.get(id).toString();
+        if (personList.containsKey(id)) return personList.get(id).toString();
         return Result.error(StatusCod.NOT_FOUND, "Not found person con id :" + id);
     }
 
@@ -41,8 +40,15 @@ public class Handler {
         return Result.ok(StatusCod.OK);
     }
 
+    //обновление 1 поля: д.б.  id, название поля и новое значение
     public String update() {
-        //
+        if (param.length < 4) {
+            return Result.error(StatusCod.BAD_REQUEST, "parameters not enough.");
+        }
+        for (int i = 1; i < param.length; i++) {
+
+        }
+        //проверка соответствия названая парамета - изменяемому полю
         return null;
     }
 
@@ -51,17 +57,31 @@ public class Handler {
         if (param.length < 6) {
             return Result.error(StatusCod.BAD_REQUEST);
         }
-        for (int i = 2; i < param.length; i++) {
-            // validate
-        }
+        //предполагается что не обязательных полей вообще нет в строке?
+        String surname = param[1];
+        String name = param[2];
+        String lastname = param[3];
+        String birthday = param[4];
+        String phone = param[5];
+        String department = param[6];
+        String position = param[7];
+        String head = param[8];
+
         return Result.error(StatusCod.OK);
     }
 
-    public String deletePerson(int id) {
+    public String deletePerson() {
+        if (param.length < 2) return Result.error(StatusCod.BAD_REQUEST);
+        int id;
+        try {
+            id = Integer.parseInt(param[1]);
+        } catch (NumberFormatException e) {
+            return Result.error(StatusCod.BAD_REQUEST);
+        }
         if (personList.containsKey(id)) {
             personList.remove(id);
             return Result.ok(StatusCod.OK);
-        }else return Result.error(StatusCod.NOT_FOUND, "Not found person con id :" + id);
+        } else return Result.error(StatusCod.NOT_FOUND, "Not found person con id :" + id);
     }
 
 

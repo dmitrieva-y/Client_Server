@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Server {
     private final static int PORT = 8180;
-    private static Handler handler;
+
 
 
     private void start() {
@@ -31,8 +31,8 @@ public class Server {
             String response;
             if (line.isEmpty()) {
                 response = Result.error(StatusCod.BAD_REQUEST);
-            }else {
-                response = getResponse(line.split(" "));
+            } else {
+                response = getResponse(line);
             }
             out.write(response);
             out.write("\r\n");
@@ -40,12 +40,13 @@ public class Server {
         }
     }
 
-    private static String getResponse(String[] param) {
-        handler = new Handler(param);
+    private static String getResponse(String line) {
+        String[] param = line.split("\\s+");
+        Handler handler = new Handler(param);
         Command command;
         try {
-             command = Command.fromString(param[0].trim());
-        }catch (IllegalArgumentException e){
+            command = Command.fromString(param[0].trim());
+        } catch (IllegalArgumentException e) {
             return Result.error(StatusCod.BAD_REQUEST);
         }
         String response;

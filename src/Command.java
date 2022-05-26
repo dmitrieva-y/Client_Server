@@ -6,13 +6,19 @@ public enum Command {
     DELETE_PERSON("delete_person"),
     DELETE_ALL("delete");
 
+    private String command;
     Command(String command) {
+        this.command = command;
+    }
+
+    public String getCommand() {
+        return command;
     }
 
     public static Command fromString(String value) {
         if (value != null) {
             for (Command com : Command.values()) {
-                if (value.equalsIgnoreCase(com.name())) {
+                if (value.equalsIgnoreCase(com.getCommand())) {
                     return com;
                 }
             }
