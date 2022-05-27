@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.util.Objects;
 
 public class Server {
     private final static int PORT = 8180;
@@ -26,6 +25,7 @@ public class Server {
     public static void readHeader() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter out = new PrintWriter(System.out);
+
         String line;
         while (!(line = br.readLine()).equals("ex")) {
             String response;
@@ -38,11 +38,12 @@ public class Server {
             out.write("\r\n");
             out.flush();
         }
+        System.err.println("client decconnect");
     }
 
     private static String getResponse(String line) {
         String[] param = line.split("\\s+");
-        Handler handler = new Handler(param);
+        Controller controller = new Controller(param);
         Command command;
         try {
             command = Command.fromString(param[0].trim());
@@ -52,22 +53,22 @@ public class Server {
         String response;
         switch (command) {
             case GET_ALL_PERSON:
-                response = handler.getAllPerson();
+                response = controller.getAllPerson();
                 break;
             case GET_PERSON:
-                response = handler.getPerson();
+                response = controller.getPerson();
                 break;
             case CREATE_PERSON:
-                response = handler.createPerson();
+                response = controller.createPerson();
                 break;
             case UPDATE_PERSON:
-                response = handler.update();
+                response = controller.update();
                 break;
             case DELETE_PERSON:
-                response = handler.deletePerson();
+                response = controller.deletePerson();
                 break;
             case DELETE_ALL:
-                response = handler.delete();
+                response = controller.delete();
                 break;
             default:
                 response = Result.error(StatusCod.BAD_REQUEST);

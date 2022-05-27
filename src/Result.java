@@ -1,4 +1,7 @@
+import java.io.PrintWriter;
+
 public class Result {
+
     public static String  ok(StatusCod statusCod, String message) {
         return statusCod.getStatus() + " " + message;
     }
