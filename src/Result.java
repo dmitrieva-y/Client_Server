@@ -1,27 +1,28 @@
-import java.io.PrintWriter;
-
 public class Result {
 
-    public static String  ok(StatusCod statusCod, String message) {
-        return statusCod.getStatus() + " " + message;
+    public static String ok(StatusCode statusCode, String message) {
+        return statusCode.getStatus() + " " + message;
     }
-    public static String  ok(StatusCod statusCod) {
-        return statusCod.getStatus()  ;
+
+    public static String ok(StatusCode statusCode) {
+        return statusCode.getStatus();
     }
 
     public static String error(int status, String errorMsg, String invalidParam) {
         StringBuilder sb = new StringBuilder("No correct : ");
-        if (status == 0){
-            return sb.append(invalidParam).append("\r\n ").append(errorMsg).toString();
+        if (status == PersonValidator.INCORRECT_PARAM) {
+            return sb.append(invalidParam).append("\r\n ")
+                     .append(errorMsg).toString();
         }
+
         return null;
     }
 
-    public static String error(StatusCod statusCod, String text) {
-        return statusCod.getStatus() + " " + text;
+    public static String error(StatusCode statusCode, String text) {
+        return statusCode.getStatus() + " " + text;
     }
 
-    public static String error(StatusCod statusCod) {
-        return statusCod.getStatus();
+    public static String error(StatusCode statusCode) {
+        return statusCode.getStatus();
     }
 }

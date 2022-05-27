@@ -4,7 +4,7 @@ public enum Command {
     CREATE_PERSON("create_person"),
     UPDATE_PERSON("update_person"),
     DELETE_PERSON("delete_person"),
-    DELETE_ALL("delete");
+    DELETE_ALL("delete_all_persons");
 
     private String command;
     Command(String command) {
@@ -23,6 +23,7 @@ public enum Command {
                 }
             }
         }
+
         throw new IllegalArgumentException("No such value");
     }
 }

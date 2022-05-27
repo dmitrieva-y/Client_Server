@@ -6,9 +6,7 @@ import java.net.ServerSocket;
 
 public class Server {
     private final static int PORT = 8180;
-
-
-
+    private  static final Controller controller = new Controller();
     private void start() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Server started");
@@ -30,10 +28,11 @@ public class Server {
         while (!(line = br.readLine()).equals("ex")) {
             String response;
             if (line.isEmpty()) {
-                response = Result.error(StatusCod.BAD_REQUEST);
+                response = Result.error(StatusCode.BAD_REQUEST);
             } else {
                 response = getResponse(line);
             }
+
             out.write(response);
             out.write("\r\n");
             out.flush();
@@ -43,44 +42,39 @@ public class Server {
 
     private static String getResponse(String line) {
         String[] param = line.split("\\s+");
-        Controller controller = new Controller(param);
+
+        // желательно создать 1 контроллер, не пересоздавать его
+        // параметр в контроллер не передаём
         Command command;
+
         try {
             command = Command.fromString(param[0].trim());
         } catch (IllegalArgumentException e) {
-            return Result.error(StatusCod.BAD_REQUEST);
+            return Result.error(StatusCode.BAD_REQUEST);
         }
-        String response;
+
         switch (command) {
             case GET_ALL_PERSON:
-                response = controller.getAllPerson();
-                break;
+                return controller.getAllPerson();
             case GET_PERSON:
-                response = controller.getPerson();
-                break;
+                return controller.getPerson(param);
             case CREATE_PERSON:
-                response = controller.createPerson();
-                break;
+                return controller.createPerson(param);
             case UPDATE_PERSON:
-                response = controller.update();
-                break;
+                return controller.update(param);
             case DELETE_PERSON:
-                response = controller.deletePerson();
-                break;
+                return controller.deletePerson(param);
             case DELETE_ALL:
-                response = controller.delete();
-                break;
+                return controller.delete();
             default:
-                response = Result.error(StatusCod.BAD_REQUEST);
+                return Result.error(StatusCode.BAD_REQUEST);
         }
-        return response;
     }
 
     public static void main(String[] args) {
         Server server = new Server();
         server.start();
     }
-
 }
 
 

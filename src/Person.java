@@ -13,7 +13,10 @@ public class Person {
     private String department;
     private String position;
     private String head;
-    private LocalDate birthday;
+
+
+
+    private String birthday;
 
     public Person() {
     }
@@ -26,7 +29,6 @@ public class Person {
         person.setLastname(param.get("lastname"));
         person.setSurname(param.get("surname"));
         person.setDepartment(param.get("department"));
-        person.setHead(param.get("department"));
         person.setPhone_number(param.get("phone_number"));
         person.setHead(param.get("head"));
         return person;
@@ -76,25 +78,17 @@ public class Person {
         this.head = head;
     }
 
-    public LocalDate getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-
-
-    public Person(String name, String lastname, LocalDate birthday) {
+    public Person(String name, String lastname, String birthday) {
         this.name = name;
         this.lastname = lastname;
         this.birthday = birthday;
         this.id = count++;
     }
 
-    public static int getCount() {
-        return count;
-    }
 
     public String getName() {
         return name;
@@ -112,18 +106,16 @@ public class Person {
         this.surname = surname;
     }
 
-    public LocalDate getBerthday() {
-        return birthday;
-    }
-
-    public void setBerthday(LocalDate birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
+
 
     public int getId() {
         return id;
     }
 
+    // пояснить назначение
     public static Map<String, String> getMapFields() {
         Map<String, String> fields = new HashMap<>();
         try {
@@ -141,9 +133,16 @@ public class Person {
 
     @Override
     public String toString() {
-        return "name='" + name + '\'' +
-                ", lastname =" + lastname;
+        return "Person{" +
+                "id=" + id +
+                ", surname='" + surname + '\'' +
+                ", name='" + name + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", phoneNumber='" + phone_number + '\'' +
+                ", department='" + department + '\'' +
+                ", position='" + position + '\'' +
+                ", head='" + head + '\'' +
+                ", birthday=" + birthday +
+                '}';
     }
-
-
 }
